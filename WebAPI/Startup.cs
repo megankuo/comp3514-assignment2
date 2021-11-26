@@ -35,18 +35,28 @@ namespace WebAPI
                   .AllowAnyHeader();
             }));
 
-            services.AddDbContext<SpeakerContext>(options =>
-    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            //        services.AddDbContext<SpeakerContext>(options =>
+            //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            var host = Configuration["DBHOST"] ?? "localhost";
+            var port = Configuration["DBPORT"] ?? "1444";
+            var user = Configuration["DBUSER"] ?? "sa";
+            var pwd = Configuration["DBPASSWORD"] ?? "SqlExpress!";
+            var db = Configuration["DBNAME"] ?? "SpeakersAPI";
+
+            var conStr = $"Server=tcp:{host},{port};Database={db};UID={user};PWD={pwd};";
+
+            services.AddDbContext<SpeakerContext>(options => options.UseSqlServer(conStr));
 
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });
-            });
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, SpeakerContext context)
         {
             if (env.IsDevelopment())
             {
@@ -64,6 +74,8 @@ namespace WebAPI
             app.UseCors("Policy");
 
             DummyData.Initialize(app);
+
+            context.Database.Migrate();
 
             app.UseEndpoints(endpoints =>
             {
