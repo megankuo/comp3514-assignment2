@@ -1,0 +1,46 @@
+﻿@page "/"
+@inject HttpClient httpClient
+
+
+@if (speakers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <a href="/add">
+        <button class="btn btn-success">Add new speaker</button>
+    </a>
+
+    <table class='table table-hover'>
+
+        <tbody>
+            @foreach (var item in speakers)
+            {
+                <tr>
+                    <td>@item.FirstName @item.LastName</td>
+                    <td><a class="btn btn-success btn-sm" href="/edit/@item.SpeakerId">Edit</a></td>
+                    <td><a class="btn btn-danger btn-sm" href="/delete/@item.SpeakerId">Delete</a></td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    Speaker[] speakers;
+    string baseUrl = "https://localhost:5001/";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await load();
+    }
+
+    protected async Task load()
+    {
+        speakers = await httpClient.GetFromJsonAsync<Speaker[]>($"{baseUrl}api/speakers");
+    }
+
+}

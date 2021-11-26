@@ -1,0 +1,48 @@
+﻿@page "/add"
+@inject NavigationManager NavManager
+@inject HttpClient httpClient
+
+<h2>Add a Speaker</h2>
+
+<EditForm Model="@speaker" OnValidSubmit="@HandleAdd">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText placeholder="First Name" id="firstName" @bind-Value="@speaker.FirstName" />
+    <br />
+    <InputText placeholder="Last Name" id="lastName" @bind-Value="@speaker.LastName" />
+    <br />
+    <InputText placeholder="Email" id="email" @bind-Value="@speaker.Email" />
+    <br />
+    <InputText placeholder="Mobile Number" id="mobileNumber" @bind-Value="@speaker.MobileNumber" />
+    <br />
+    <InputText placeholder="Specialization" id="specialization" @bind-Value="@speaker.Specialization" />
+    <br />
+    <InputText placeholder="City" id="city" @bind-Value="@speaker.City" />
+    <br />
+    <InputText placeholder="Province" id="province" @bind-Value="@speaker.Province" />
+    <br />
+    <InputText placeholder="Employer" id="employer" @bind-Value="@speaker.Employer" />
+    <br />
+    <button type="submit">Submit</button>
+</EditForm>
+
+<p><button @onclick="@returnToHome">Return to Home</button></p>
+
+@code {
+    private Speaker speaker = new Speaker();
+    string baseUrl = "https://localhost:5001/";
+    private async void HandleAdd()
+    {
+        string endpoint = $"{baseUrl}api/speakers";
+
+        await httpClient.PostAsJsonAsync(endpoint, speaker);
+
+        returnToHome();
+    }
+    private void returnToHome()
+    {
+        NavManager.NavigateTo("/");
+    }
+}
+

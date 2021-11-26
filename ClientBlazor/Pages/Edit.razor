@@ -1,0 +1,69 @@
+﻿@page "/edit/{SpeakerId}"
+@inject NavigationManager NavManager
+@inject HttpClient httpClient
+
+<h2>Edit a Speaker</h2>
+
+<EditForm Model="@speaker" OnValidSubmit="@HandleUpdate">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText placeholder="First Name" id="firstName" @bind-Value="@speaker.FirstName" />
+    <br />
+    <InputText placeholder="Last Name" id="lastName" @bind-Value="@speaker.LastName" />
+    <br />
+    <InputText placeholder="Email" id="email" @bind-Value="@speaker.Email" />
+    <br />
+    <InputText placeholder="Mobile Number" id="mobileNumber" @bind-Value="@speaker.MobileNumber" />
+    <br />
+    <InputText placeholder="Specialization" id="specialization" @bind-Value="@speaker.Specialization" />
+    <br />
+    <InputText placeholder="City" id="city" @bind-Value="@speaker.City" />
+    <br />
+    <InputText placeholder="Province" id="province" @bind-Value="@speaker.Province" />
+    <br />
+    <InputText placeholder="Employer" id="employer" @bind-Value="@speaker.Employer" />
+    <br />
+    <button type="submit">Submit</button>
+</EditForm>
+
+<p><button @onclick="@returnToHome">Return to Home</button></p>
+
+@code {
+    [Parameter]
+    public string SpeakerId { get; set; }
+    private Speaker speaker = new Speaker();
+    string baseUrl = "https://localhost:5001/";
+    Speaker s;
+    protected override async Task OnInitializedAsync()
+    {
+        await GetSpeaker(SpeakerId);
+    }
+    protected async Task GetSpeaker(string id)
+    {
+        s = await httpClient.GetFromJsonAsync<Speaker>($"{baseUrl}api/speakers/{id}");
+        speaker.SpeakerId = s.SpeakerId;
+        speaker.FirstName = s.FirstName;
+        speaker.LastName = s.LastName;
+        speaker.Email = s.Email;
+        speaker.MobileNumber = s.MobileNumber;
+        speaker.Specialization = s.Specialization;
+        speaker.City = s.City;
+        speaker.Province = s.Province;
+        speaker.Employer = s.Employer;
+
+    }
+    private async void HandleUpdate()
+    {
+        string endpoint = $"{baseUrl}api/speakers/{SpeakerId}";
+
+        await httpClient.PutAsJsonAsync(endpoint, speaker);
+
+        returnToHome();
+    }
+    private void returnToHome()
+    {
+        NavManager.NavigateTo("/");
+    }
+}
+
