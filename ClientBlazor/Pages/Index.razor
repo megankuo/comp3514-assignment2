@@ -9,13 +9,13 @@
 else
 {
     <a href="/add">
-        <button class="btn btn-success">Add new speaker</button>
-    </a>
+    <button class="btn btn-success">Add new speaker</button>
+</a>
 
     <table class='table table-hover'>
 
-        <tbody>
-            @foreach (var item in speakers)
+    <tbody>
+        @foreach (var item in speakers)
             {
                 <tr>
                     <td>@item.FirstName @item.LastName</td>
@@ -31,7 +31,7 @@ else
 @code {
 
     Speaker[] speakers;
-    string baseUrl = "https://localhost:5001/";
+    string baseUrl = "http://localhost:5000/";
 
     protected override async Task OnInitializedAsync()
     {
